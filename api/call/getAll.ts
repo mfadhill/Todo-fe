@@ -1,7 +1,7 @@
-import api from "..";
+// import api from "..";
 
-export const getAll = async () => {
-    const response = await api.get("/all");
+// export const getAll = async () => {
+//     const response = await api.get("/all");
 
-    return response.data;
-};
+//     return response.data;
+// };

@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "https://fakestoreapi.com/products",
+    baseURL: "http://10.0.2.2:3000/",
 });
 
 export default api;
