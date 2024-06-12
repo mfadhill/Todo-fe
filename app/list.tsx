@@ -125,19 +125,33 @@ const List = () => {
         setModalVisible(true);
     }
 
-    const toggleCheckbox = (id: string) => {
-        setList(list.map(item => item.id === id ? { ...item, checked: !item.checked } : item));
+    const toggleCheckbox = async (id: string, status: boolean) => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (token) {
+                await axios.patch(`http://192.168.18.111:3000/list/${id}`, { status: !status }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                getData();
+            } else {
+                console.log('Please login first');
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const RenderItem = ({ data }) => (
         <Card style={styles.card}>
             <Card.Content style={styles.cardContent}>
 
-                <Paragraph style={data.checked ? styles.checkedText : null}>{data.content}</Paragraph>
+                <Paragraph style={data.status ? styles.checkedText : null}>{data.content}</Paragraph>
                 <View style={styles.cardActions}>
                     <Checkbox
-                        status={data.checked ? 'checked' : 'unchecked'}
-                        onPress={() => toggleCheckbox(data.id)}
+                        status={data.status ? 'checked' : 'unchecked'}
+                        onPress={() => toggleCheckbox(data.id, data.status)}
                     />
                     <IconButton
                         icon="pencil"
