@@ -98,7 +98,7 @@ const List = () => {
             <FlatList
                 data={list}
                 renderItem={({ item }) => <RenderItem data={item} />}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(_, index) => index.toString()}
                 style={styles.list}
             />
         </View>
