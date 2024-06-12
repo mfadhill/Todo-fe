@@ -6,6 +6,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { getList } from '@/api/call/getList'; // Ensure the correct import path
 import { getName } from '@/api/call/getUser';
+import { useNavigation } from '@react-navigation/native';
+import { router } from 'expo-router';
 
 const List = () => {
     const [list, setList] = useState([]);
@@ -14,6 +16,7 @@ const List = () => {
     const [username, setUsername] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [editContent, setEditContent] = useState('');
+    const navigation = useNavigation();
 
     const getData = async () => {
         try {
@@ -143,6 +146,15 @@ const List = () => {
         }
     }
 
+    const logout = async () => {
+        try {
+            await AsyncStorage.removeItem('token'); // Clear the token
+            router.push('login'); // Navigate to login screen
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     const RenderItem = ({ data }) => (
         <Card style={styles.card}>
             <Card.Content style={styles.cardContent}>
@@ -173,8 +185,12 @@ const List = () => {
     return (
         <View style={styles.container}>
             <Title style={styles.title}>To-Do List</Title>
-
-            <Title>Hello, {username}</Title>
+            <View style={styles.header}>
+                <Title>Hello, {username}</Title>
+                <Button mode="contained" onPress={logout} style={styles.logoutButton}>
+                    Logout
+                </Button>
+            </View>
             <View style={styles.inputContainer}>
                 <TextInput
                     label="New Task"
@@ -232,8 +248,11 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
     },
-    checkbox: {
-
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16,
     },
     buttonContainer: {
         marginTop: 16,
@@ -299,6 +318,10 @@ const styles = StyleSheet.create({
     },
     checkedText: {
         textDecorationLine: 'line-through',
+    },
+    logoutButton: {
+        marginTop: 20,
+        width: '9%',
     },
 });
 
