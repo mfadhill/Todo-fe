@@ -1,14 +1,15 @@
 // LoginScreen.js
 import axios from 'axios';
+import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView, } from 'react-native';
 import { TextInput, Button, Title, HelperText } from 'react-native-paper';
+
 
 const Register = () => {
     const [email, setEmail] = useState('');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-
     const [errors, setErrors] = useState({
         username: '',
         email: '',
@@ -29,7 +30,7 @@ const Register = () => {
             valid = false;
         }
 
-        if (password.length === 0) {
+        if (password.length === 5) {
             newErrors.password = 'Password is required';
             valid = false;
         }
@@ -42,16 +43,15 @@ const Register = () => {
     const handleRegister = async () => {
         if (validate()) {
             try {
-                const register = await axios.post('http://localhost:3000/register',
+                const register = await axios.post('http://localhost:3000/auth/register',
                     // const register = await axios.post('http://10.0.2.2:3000/register',
                     { username, email, password });
                 console.log(register);
-                return register;
+                router.push('/login');
             } catch (error) {
                 console.log(error);
             }
-
-            console.log('Logging in:', { email, password });
+            console.log('Logging in:', { username, email, password });
         }
     };
 
@@ -103,9 +103,13 @@ const Register = () => {
                         {errors.password}
                     </HelperText>
                 </View>
-                <Button mode="contained" onPress={handleRegister} style={styles.button}>
+                <Button mode="contained" onPress={handleRegister} style={styles.button}
+                >
                     Register
                 </Button>
+                <Link href="/login" style={styles.button}>
+                    <Title> halaman login </Title>
+                </Link>
             </ScrollView>
         </KeyboardAvoidingView>
     );

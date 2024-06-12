@@ -1,4 +1,6 @@
 // LoginScreen.js
+import axios from 'axios';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
 import { TextInput, Button, Title, HelperText } from 'react-native-paper';
@@ -21,7 +23,7 @@ const Login = () => {
             valid = false;
         }
 
-        if (password.length === 0) {
+        if (password.length === 5) {
             newErrors.password = 'Password is required';
             valid = false;
         }
@@ -30,9 +32,15 @@ const Login = () => {
         return valid;
     };
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (validate()) {
-            // Handle login logic
+            try {
+                const login = await axios.post('http://localhost:3000/auth/login', { email, password });
+                console.log(login);
+                router.push('/list');
+            } catch (error) {
+                console.log(error);
+            }
             console.log('Logging in:', { email, password });
         }
     };
@@ -72,11 +80,12 @@ const Login = () => {
                     </HelperText>
                 </View>
 
-                <Button mode="contained" onPress={handleLogin} style={styles.button}>
+                <Button mode="contained" onPress={handleLogin} style={styles.button}
+                >
                     Login
                 </Button>
             </ScrollView>
-        </KeyboardAvoidingView>
+        </KeyboardAvoidingView >
     );
 };
 
