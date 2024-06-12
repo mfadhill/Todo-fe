@@ -1,15 +1,17 @@
 // DashboardScreen.js
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, Alert, Modal } from 'react-native';
-import { TextInput, Button, Card, Title, Paragraph, IconButton } from 'react-native-paper';
+import { TextInput, Button, Card, Title, Paragraph, IconButton, Checkbox } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { getList } from '@/api/call/getList'; // Ensure the correct import path
+import { getName } from '@/api/call/getUser';
 
 const List = () => {
     const [list, setList] = useState([]);
     const [newTodo, setNewTodo] = useState('');
     const [editTodo, setEditTodo] = useState(null);
+    const [username, setUsername] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [editContent, setEditContent] = useState('');
 
@@ -17,7 +19,35 @@ const List = () => {
         try {
             const res = await getList();
             console.log(res?.data);
-            setList(res?.data);
+            setList(res?.data.map(item => ({ ...item, checked: false }))); // Initialize checked state
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const getUsers = async () => {
+        try {
+            const res = await getName();
+            console.log(res?.data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const getUser = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (token) {
+                const data = await axios.get('http://192.168.18.111:3000/auth/detail', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                setUsername(data.data.username);
+                console.log(data.data);
+            } else {
+                console.log('Please login first');
+            }
         } catch (error) {
             console.log(error);
         }
@@ -25,9 +55,8 @@ const List = () => {
 
     useEffect(() => {
         getData();
+        getUser();
     }, []);
-
-    console.log(list);
 
     const addList = async () => {
         try {
@@ -40,7 +69,7 @@ const List = () => {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
-                setNewTodo(''); // Clear the input field
+                setNewTodo(''); // Clear input after adding
                 getData(); // Refresh the list
             } else {
                 console.log('Please login first');
@@ -59,7 +88,7 @@ const List = () => {
                         'Authorization': `Bearer ${token}`,
                     },
                 });
-                getData(); // Refresh the list
+                getData();
             } else {
                 console.log('Please login first');
             }
@@ -96,11 +125,20 @@ const List = () => {
         setModalVisible(true);
     }
 
+    const toggleCheckbox = (id: string) => {
+        setList(list.map(item => item.id === id ? { ...item, checked: !item.checked } : item));
+    }
+
     const RenderItem = ({ data }) => (
         <Card style={styles.card}>
             <Card.Content style={styles.cardContent}>
-                <Paragraph>{data.content}</Paragraph>
+
+                <Paragraph style={data.checked ? styles.checkedText : null}>{data.content}</Paragraph>
                 <View style={styles.cardActions}>
+                    <Checkbox
+                        status={data.checked ? 'checked' : 'unchecked'}
+                        onPress={() => toggleCheckbox(data.id)}
+                    />
                     <IconButton
                         icon="pencil"
                         size={20}
@@ -116,10 +154,13 @@ const List = () => {
         </Card>
     );
 
+    // console.log(username);
+
     return (
         <View style={styles.container}>
             <Title style={styles.title}>To-Do List</Title>
 
+            <Title>Hello, {username}</Title>
             <View style={styles.inputContainer}>
                 <TextInput
                     label="New Task"
@@ -136,7 +177,7 @@ const List = () => {
             <FlatList
                 data={list}
                 renderItem={({ item }) => <RenderItem data={item} />}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(_, index) => index.toString()}
                 style={styles.list}
             />
 
@@ -157,12 +198,14 @@ const List = () => {
                             style={styles.input}
                             mode="outlined"
                         />
-                        <Button mode="contained" onPress={updateList} style={styles.button}>
-                            Update
-                        </Button>
-                        <Button mode="outlined" onPress={() => setModalVisible(false)} style={styles.button}>
-                            Cancel
-                        </Button>
+                        <View style={styles.buttonContainer}>
+                            <Button mode="contained" onPress={updateList} style={styles.button}>
+                                Update
+                            </Button>
+                            <Button mode="outlined" onPress={() => setModalVisible(false)} style={styles.button}>
+                                Cancel
+                            </Button>
+                        </View>
                     </View>
                 </View>
             </Modal>
@@ -174,6 +217,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
+    },
+    checkbox: {
+
+    },
+    buttonContainer: {
+        marginTop: 16,
+        flexDirection: 'row',
+        gap: 8,
+        justifyContent: 'space-between',
     },
     title: {
         textAlign: 'center',
@@ -190,6 +242,7 @@ const styles = StyleSheet.create({
     input: {
         flex: 1,
         marginRight: 8,
+        height: 40,
     },
     button: {
         paddingHorizontal: 16,
@@ -207,6 +260,7 @@ const styles = StyleSheet.create({
     },
     cardActions: {
         flexDirection: 'row',
+        alignItems: 'center',
     },
     modalOverlay: {
         flex: 1,
@@ -228,6 +282,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
+    },
+    checkedText: {
+        textDecorationLine: 'line-through',
     },
 });
 

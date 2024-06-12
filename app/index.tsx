@@ -139,6 +139,7 @@ const styles = StyleSheet.create({
     },
     button: {
         marginTop: 16,
+        width: '100%',
         alignSelf: 'center', // Align button to the center
     },
     logo: {
