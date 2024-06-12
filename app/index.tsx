@@ -43,8 +43,8 @@ const Register = () => {
     const handleRegister = async () => {
         if (validate()) {
             try {
-                const register = await axios.post('http://localhost:3000/auth/register',
-                    // const register = await axios.post('http://10.0.2.2:3000/register',
+                // const register = await axios.post('http://localhost:3000/auth/register',
+                const register = await axios.post('http://192.168.18.111:3000/auth/register',
                     { username, email, password });
                 console.log(register);
                 router.push('/login');
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
         alignItems: 'center', // Align items to the center
     },
     input: {
-        width: '50%', // Set width to 50% of the screen
+        width: '100%', // Set width to 50% of the screen
         marginBottom: 16,
     },
     button: {

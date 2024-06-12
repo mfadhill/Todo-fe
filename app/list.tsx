@@ -1,34 +1,78 @@
 // DashboardScreen.js
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, FlatList, Alert } from 'react-native';
 import { TextInput, Button, Card, Title, Paragraph, IconButton } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { getList } from '@/api/call/getList'; // Ensure the correct import path
 
 const List = () => {
-    const [todos, setTodos] = useState([]);
+    const [list, setList] = useState([]);
     const [newTodo, setNewTodo] = useState('');
 
-    const addTodo = () => {
-        if (newTodo.length === 0) {
-            Alert.alert('Error', 'Please enter a task');
-            return;
+    const getData = async () => {
+        try {
+            const res = await getList();
+            console.log(res?.data);
+            setList(res?.data);
+        } catch (error) {
+            console.log(error);
         }
+    }
 
-        setTodos([...todos, { id: Math.random().toString(), task: newTodo }]);
-        setNewTodo('');
-    };
+    useEffect(() => {
+        getData();
+    }, []);
 
-    const deleteTodo = (id) => {
-        setTodos(todos.filter((todo) => todo.id !== id));
-    };
+    console.log(list);
 
-    const renderItem = ({ item }) => (
+    const addList = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            console.log(token);
+
+            if (token) {
+                await axios.post('http://192.168.18.111:3000/list', { content: newTodo }, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                setNewTodo(''); // Clear the input field
+                getData(); // Refresh the list
+            } else {
+                console.log('Please login first');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const deleteTodo = async (id: string) => {
+        try {
+            const token = await AsyncStorage.getItem('token');
+            if (token) {
+                await axios.delete(`http://192.168.18.111:3000/list/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                getData(); // Refresh the list
+            } else {
+                console.log('Please login first');
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const RenderItem = ({ data }) => (
         <Card style={styles.card}>
             <Card.Content style={styles.cardContent}>
-                <Paragraph>{item.task}</Paragraph>
+                <Paragraph>{data.content}</Paragraph>
                 <IconButton
                     icon="delete"
                     size={20}
-                    onPress={() => deleteTodo(item.id)}
+                    onPress={() => deleteTodo(data.id)}
                 />
             </Card.Content>
         </Card>
@@ -46,15 +90,15 @@ const List = () => {
                     style={styles.input}
                     mode="outlined"
                 />
-                <Button mode="contained" onPress={addTodo} style={styles.button}>
+                <Button mode="contained" onPress={addList} style={styles.button}>
                     Add
                 </Button>
             </View>
 
             <FlatList
-                data={todos}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
+                data={list}
+                renderItem={({ item }) => <RenderItem data={item} />}
+                keyExtractor={(item) => item.id.toString()}
                 style={styles.list}
             />
         </View>
@@ -69,6 +113,8 @@ const styles = StyleSheet.create({
     title: {
         textAlign: 'center',
         marginVertical: 16,
+        fontSize: 28,
+        fontWeight: 'bold',
     },
     inputContainer: {
         flexDirection: 'row',

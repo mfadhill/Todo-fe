@@ -4,6 +4,7 @@ import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
 import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Image, Alert } from 'react-native';
 import { TextInput, Button, Title, HelperText } from 'react-native-paper';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -37,6 +38,7 @@ const Login = () => {
             try {
                 const login = await axios.post('http://192.168.18.111:3000/auth/login', { email, password });
                 console.log(login);
+                await AsyncStorage.setItem('token', login.data.access_token);
                 router.push('/list');
             } catch (error) {
                 console.log(error);
