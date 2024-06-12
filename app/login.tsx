@@ -1,8 +1,8 @@
 // LoginScreen.js
 import axios from 'axios';
-import { router } from 'expo-router';
+import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Image, Alert } from 'react-native';
 import { TextInput, Button, Title, HelperText } from 'react-native-paper';
 
 const Login = () => {
@@ -35,7 +35,7 @@ const Login = () => {
     const handleLogin = async () => {
         if (validate()) {
             try {
-                const login = await axios.post('http://localhost:3000/auth/login', { email, password });
+                const login = await axios.post('http://192.168.18.111:3000/auth/login', { email, password });
                 console.log(login);
                 router.push('/list');
             } catch (error) {
@@ -48,6 +48,7 @@ const Login = () => {
     return (
         <KeyboardAvoidingView style={styles.container} behavior="padding">
             <ScrollView contentContainerStyle={styles.scrollView}>
+                <Image source={require('../assets/images/1.jpg')} style={styles.logo} />
                 <Title style={styles.title}>Login</Title>
 
                 <View style={styles.inputContainer}>
@@ -84,6 +85,9 @@ const Login = () => {
                 >
                     Login
                 </Button>
+                <Link href="/" style={styles.button}>
+                    <Title> Dont have account, Login </Title>
+                </Link>
             </ScrollView>
         </KeyboardAvoidingView >
     );
@@ -101,18 +105,27 @@ const styles = StyleSheet.create({
     },
     title: {
         marginBottom: 20,
+        marginTop: 20,
         textAlign: 'center',
+        fontSize: 28,
+        fontWeight: 'bold',
     },
     inputContainer: {
         alignItems: 'center', // Align items to the center
     },
     input: {
-        width: '50%', // Set width to 50% of the screen
+        width: '100%', // Set width to 50% of the screen
         marginBottom: 16,
     },
     button: {
         marginTop: 16,
+        width: '100%',
         alignSelf: 'center', // Align button to the center
+    },
+    logo: {
+        width: 200,
+        height: 200,
+        alignSelf: 'center',
     },
 });
 

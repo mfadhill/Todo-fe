@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { Link, router } from 'expo-router';
 import React, { useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView, ScrollView, } from 'react-native';
+import { View, StyleSheet, KeyboardAvoidingView, ScrollView, Image } from 'react-native';
 import { TextInput, Button, Title, HelperText } from 'react-native-paper';
 
 
@@ -58,6 +58,7 @@ const Register = () => {
     return (
         <KeyboardAvoidingView style={styles.container} behavior="padding">
             <ScrollView contentContainerStyle={styles.scrollView}>
+                <Image source={require('../assets/images/1.jpg')} style={styles.logo} />
                 <Title style={styles.title}>Register</Title>
 
                 <View style={styles.inputContainer}>
@@ -108,7 +109,7 @@ const Register = () => {
                     Register
                 </Button>
                 <Link href="/login" style={styles.button}>
-                    <Title> halaman login </Title>
+                    <Title> you have account, Login </Title>
                 </Link>
             </ScrollView>
         </KeyboardAvoidingView>
@@ -139,6 +140,11 @@ const styles = StyleSheet.create({
     button: {
         marginTop: 16,
         alignSelf: 'center', // Align button to the center
+    },
+    logo: {
+        width: 200,
+        height: 200,
+        alignSelf: 'center',
     },
 });
 
