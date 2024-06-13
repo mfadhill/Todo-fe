@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Modal, Text } from 'react-native';
+import { View, StyleSheet, FlatList, Modal, Text, KeyboardAvoidingView, Platform } from 'react-native';
 import { TextInput, Button, Card, Paragraph, IconButton, Checkbox, Title } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -15,6 +15,7 @@ const List = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [editContent, setEditContent] = useState('');
     const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+    // const [showUpdate, setUpdate] = useState(false);
 
     const getData = async () => {
         try {
@@ -156,7 +157,6 @@ const List = () => {
     const RenderItem = ({ data }) => (
         <Card style={styles.card} >
             <Card.Content style={styles.cardContent}>
-
                 <Paragraph style={data.status ? styles.checkedText : null}>{data.content}</Paragraph>
                 <View style={styles.cardActions}>
                     <Checkbox
@@ -218,13 +218,17 @@ const List = () => {
                     setModalVisible(!modalVisible);
                 }}
             >
-                <View style={styles.modalOverlay}>
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === "android" ? "padding" : "height"}
+                    style={styles.modalOverlay}
+                    keyboardVerticalOffset={100}
+                >
                     <View style={styles.modalView}>
                         <TextInput
                             label="Edit Task"
                             value={editContent}
                             onChangeText={setEditContent}
-                            style={styles.input}
+                            style={{ height: 40, width: '100%' }}
                             mode="outlined"
                         />
                         <View style={styles.buttonContainer}>
@@ -236,8 +240,9 @@ const List = () => {
                             </Button>
                         </View>
                     </View>
-                </View>
+                </KeyboardAvoidingView>
             </Modal>
+
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -246,7 +251,11 @@ const List = () => {
                     setLogoutModalVisible(!logoutModalVisible);
                 }}
             >
-                <View style={styles.modalOverlay}>
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === "android" ? "padding" : "height"}
+                    style={styles.modalOverlay}
+                    keyboardVerticalOffset={100}
+                >
                     <View style={styles.modalView}>
                         <Text style={styles.modalText}>Are you sure you want to logout?</Text>
                         <View style={styles.buttonContainer}>
@@ -258,7 +267,7 @@ const List = () => {
                             </Button>
                         </View>
                     </View>
-                </View>
+                </KeyboardAvoidingView>
             </Modal>
         </View>
     );
@@ -297,7 +306,8 @@ const styles = StyleSheet.create({
     input: {
         flex: 1,
         marginRight: 8,
-        height: 40,
+        width: '100%',
+        // height: 40,
     },
     button: {
         paddingHorizontal: 16,
@@ -346,7 +356,6 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     logoutButton: {
-
         marginTop: 20,
         width: 'auto',
     },

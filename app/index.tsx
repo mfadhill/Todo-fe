@@ -44,7 +44,7 @@ const Register = () => {
         if (validate()) {
             try {
                 // const register = await axios.post('http://localhost:3000/auth/register',
-                const register = await axios.post('http://192.168.18.111:3000/auth/register',
+                const register = await axios.post('http://192.168.18.30:3000/auth/register',
                     { username, email, password });
                 console.log(register);
                 router.push('/login');
