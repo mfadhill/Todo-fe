@@ -160,8 +160,11 @@ const List = () => {
                 <Paragraph style={data.status ? styles.checkedText : null}>{data.content}</Paragraph>
                 <View style={styles.cardActions}>
                     <Checkbox
+                        theme={{ colors: { primary: '#0000FF' } }}
                         status={data.status ? 'checked' : 'unchecked'}
                         onPress={() => toggleCheckbox(data.id, data.status)}
+                        color="#0000FF"
+                        uncheckedColor="black"
                     />
                     <IconButton
                         icon="pencil"
@@ -195,7 +198,7 @@ const List = () => {
                     style={styles.input}
                     mode="outlined"
                 />
-                <Button mode="contained" onPress={addList} style={styles.button}>
+                <Button mode="contained" disabled={!newTodo} onPress={addList} style={styles.button} buttonColor="#DC143C">
                     Add
                 </Button>
             </View>
@@ -235,7 +238,6 @@ const List = () => {
                     </View>
                 </View>
             </Modal>
-
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -269,9 +271,9 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 16,
+        justifyContent: 'space-between',
+        marginBottom: 30,
     },
     buttonContainer: {
         marginTop: 16,
@@ -284,6 +286,7 @@ const styles = StyleSheet.create({
         marginVertical: 16,
         fontSize: 28,
         fontWeight: 'bold',
+        marginTop: 40,
     },
     inputContainer: {
         flexDirection: 'row',
@@ -343,8 +346,9 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     logoutButton: {
+
         marginTop: 20,
-        width: '9%',
+        width: 'auto',
     },
 });
 
