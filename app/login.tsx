@@ -39,7 +39,7 @@ const Login = () => {
                 const login = await axios.post('http://192.168.18.111:3000/auth/login', { email, password });
                 console.log(login);
                 await AsyncStorage.setItem('token', login.data.access_token);
-                router.push('/list');
+                router.replace('/list');
             } catch (error) {
                 console.log(error);
             }

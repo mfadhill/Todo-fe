@@ -1,12 +1,10 @@
-// DashboardScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, FlatList, Alert, Modal } from 'react-native';
-import { TextInput, Button, Card, Title, Paragraph, IconButton, Checkbox } from 'react-native-paper';
+import { View, StyleSheet, FlatList, Modal, Text } from 'react-native';
+import { TextInput, Button, Card, Paragraph, IconButton, Checkbox, Title } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { getList } from '@/api/call/getList'; // Ensure the correct import path
 import { getName } from '@/api/call/getUser';
-import { useNavigation } from '@react-navigation/native';
 import { router } from 'expo-router';
 
 const List = () => {
@@ -16,7 +14,7 @@ const List = () => {
     const [username, setUsername] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
     const [editContent, setEditContent] = useState('');
-    const navigation = useNavigation();
+    const [logoutModalVisible, setLogoutModalVisible] = useState(false);
 
     const getData = async () => {
         try {
@@ -149,14 +147,14 @@ const List = () => {
     const logout = async () => {
         try {
             await AsyncStorage.removeItem('token'); // Clear the token
-            router.push('login'); // Navigate to login screen
+            router.replace('login'); // Navigate to login screen
         } catch (error) {
             console.log(error);
         }
     }
 
     const RenderItem = ({ data }) => (
-        <Card style={styles.card}>
+        <Card style={styles.card} >
             <Card.Content style={styles.cardContent}>
 
                 <Paragraph style={data.status ? styles.checkedText : null}>{data.content}</Paragraph>
@@ -180,14 +178,12 @@ const List = () => {
         </Card>
     );
 
-    // console.log(username);
-
     return (
         <View style={styles.container}>
             <Title style={styles.title}>To-Do List</Title>
             <View style={styles.header}>
                 <Title>Hello, {username}</Title>
-                <Button mode="contained" onPress={logout} style={styles.logoutButton}>
+                <Button mode="contained" onPress={() => setLogoutModalVisible(true)} style={styles.logoutButton}>
                     Logout
                 </Button>
             </View>
@@ -234,6 +230,29 @@ const List = () => {
                             </Button>
                             <Button mode="outlined" onPress={() => setModalVisible(false)} style={styles.button}>
                                 Cancel
+                            </Button>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={logoutModalVisible}
+                onRequestClose={() => {
+                    setLogoutModalVisible(!logoutModalVisible);
+                }}
+            >
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalView}>
+                        <Text style={styles.modalText}>Are you sure you want to logout?</Text>
+                        <View style={styles.buttonContainer}>
+                            <Button mode="contained" onPress={logout} style={styles.button}>
+                                Yes
+                            </Button>
+                            <Button mode="outlined" onPress={() => setLogoutModalVisible(false)} style={styles.button}>
+                                No
                             </Button>
                         </View>
                     </View>
@@ -318,6 +337,10 @@ const styles = StyleSheet.create({
     },
     checkedText: {
         textDecorationLine: 'line-through',
+    },
+    modalText: {
+        fontSize: 18,
+        marginBottom: 16,
     },
     logoutButton: {
         marginTop: 20,
